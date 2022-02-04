@@ -17,6 +17,17 @@ window.addEventListener("game-last-tile-revealed-in-row", () => {
   }
 });
 
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  switch (message.type) {
+    case "boot-hacka-wordle":
+      console.log("boot-hacka-wordle");
+      chrome.runtime.sendMessage(localStorage.getItem("hacka-wordle"));
+      break;
+    default:
+      console.log("no.");
+  }
+});
+
 function addWordInformation(insertIndex: number): Promise<string> {
   const $currentRow = $gameRows[insertIndex] as HTMLElement;
   const lettersValue = $currentRow.getAttribute("letters") as string;
