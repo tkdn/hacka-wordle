@@ -16,3 +16,9 @@ const { boardState }: StorageState = JSON.parse(
 );
 
 export const currentBoard = boardState;
+
+export const SendWordAction = () => ({
+  event: "app:add-word",
+  data: JSON.parse(localStorage.getItem("hacka-wordle") as string),
+});
+

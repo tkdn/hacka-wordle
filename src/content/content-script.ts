@@ -1,8 +1,37 @@
-import { $gameRows, currentBoard, ExtensionStorage } from "./constant";
+import { currentBoard, SendWordAction } from "./constant";
+import { addWordInformation, updateExtensionStorage } from "./function";
 
 let currentRowIndex = currentBoard.findIndex((word) => word === "");
 let revealedCount = 0;
+let currentPort: chrome.runtime.Port | null = null;
 
+/** Chrome Extension Event Listen */
+chrome.runtime.onConnect.addListener((port) => {
+  currentPort = port;
+  port.onMessage.addListener((message) => {
+    /** メッセージログ */
+    console.log(message);
+
+    /** アプリ起動:拡張初期化 */
+    if (message.event === "app:boot") {
+      port.postMessage(SendWordAction());
+    }
+  
+    /** 拡張から単語が到着 */
+    if (message.type === "app:send-word") {
+      message.data.split("").forEach((letter: string) => {
+        window.dispatchEvent(new KeyboardEvent("keydown", {
+          key: letter,
+        }));
+      });
+      window.dispatchEvent(new KeyboardEvent("keydown", {
+        key: "Enter",
+      }));
+    }
+  });
+});
+
+/** Window CustomEvent Listen */
 window.addEventListener("game-last-tile-revealed-in-row", () => {
   revealedCount++;
   if (revealedCount !== currentRowIndex + 1) {
@@ -11,53 +40,15 @@ window.addEventListener("game-last-tile-revealed-in-row", () => {
     }
   } else {
     addWordInformation(currentRowIndex).then((value) => {
+      console.log(currentPort);
       updateExtensionStorage(value);
+      try {
+        currentPort!.postMessage(SendWordAction());
+      } catch (error) {
+        console.warn(error);
+      }
     });
     currentRowIndex++;
   }
 });
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  switch (message.type) {
-    case "boot-hacka-wordle":
-      console.log("boot-hacka-wordle");
-      chrome.runtime.sendMessage(localStorage.getItem("hacka-wordle"));
-      break;
-    default:
-      console.log("no.");
-  }
-});
-
-function addWordInformation(insertIndex: number): Promise<string> {
-  const $currentRow = $gameRows[insertIndex] as HTMLElement;
-  const lettersValue = $currentRow.getAttribute("letters") as string;
-  const clickHandler = () =>
-    window.open(
-      `https://www.ldoceonline.com/jp/search/english/direct/?q=${lettersValue}`
-    );
-  if ($currentRow.getAttribute("listener") !== "true") {
-    $currentRow.setAttribute("listener", "true");
-    $currentRow.addEventListener("click", clickHandler);
-    $currentRow.title = `ロングマン現代英英辞典より:${lettersValue.toUpperCase()}`;
-    $currentRow.style.cursor = "pointer";
-  }
-  return new Promise((resolve) => {
-    resolve(lettersValue);
-  });
-}
-
-function updateExtensionStorage(word: string) {
-  const storage: ExtensionStorage = JSON.parse(
-    localStorage.getItem("hacka-wordle") as string
-  ) || {
-    myDictionaries: [],
-  };
-  storage.myDictionaries.push(word);
-  localStorage.setItem(
-    "hacka-wordle",
-    JSON.stringify({
-      ...storage,
-      myDictionaries: [...new Set(storage.myDictionaries)],
-    } as ExtensionStorage)
-  );
-}
