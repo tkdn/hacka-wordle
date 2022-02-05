@@ -1,7 +1,6 @@
 import { dirname, relative } from "node:path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import AutoImport from "unplugin-auto-import/vite";
 import { pathResolve } from "utils";
 
 export default defineConfig(({ command, mode }) => ({
@@ -31,14 +30,6 @@ export default defineConfig(({ command, mode }) => ({
   },
   plugins: [
     mode === "popup" ? react() : null,
-    AutoImport({
-      imports: [
-        {
-          "webextension-polyfill": [["default", "browser"]],
-        },
-      ],
-      dts: pathResolve("src/auto-imports.d.ts"),
-    }),
     {
       name: "assets-rewrite",
       enforce: "post",
