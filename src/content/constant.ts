@@ -4,6 +4,11 @@ type StorageState = {
 
 export type ExtensionStorage = {
   myDictionaries: string[];
+  evaluations: {
+    correct: string[],
+    present: string[],
+    absent: string[],
+  }
 };
 
 export const $gameRows = document!
@@ -11,14 +16,16 @@ export const $gameRows = document!
   .shadowRoot!.querySelector("game-theme-manager")!
   .querySelectorAll("#board game-row[letters]");
 
-const { boardState }: StorageState = JSON.parse(
+export const $gameTiles = [
+  ...document!.querySelector("game-app")!
+  .shadowRoot!.querySelectorAll("#board game-row")]
+  .map(e => e.shadowRoot!.querySelectorAll("game-tile"));
+
+export const { boardState }: StorageState = JSON.parse(
   localStorage.getItem("gameState") as string
 );
 
-export const currentBoard = boardState;
-
 export const SendWordAction = () => ({
   event: "app:add-word",
-  data: JSON.parse(localStorage.getItem("hacka-wordle") as string),
+  data: JSON.parse(localStorage.getItem("hackaWordle") as string),
 });
-

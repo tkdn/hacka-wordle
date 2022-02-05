@@ -1,7 +1,7 @@
-import { currentBoard, SendWordAction } from "./constant";
+import { boardState, SendWordAction } from "./constant";
 import { addWordInformation, updateExtensionStorage } from "./function";
 
-let currentRowIndex = currentBoard.findIndex((word) => word === "");
+let currentRowIndex = boardState.findIndex((word) => word === "");
 let revealedCount = 0;
 let currentPort: chrome.runtime.Port | null = null;
 
@@ -40,7 +40,6 @@ window.addEventListener("game-last-tile-revealed-in-row", () => {
     }
   } else {
     addWordInformation(currentRowIndex).then((value) => {
-      console.log(currentPort);
       updateExtensionStorage(value);
       try {
         currentPort!.postMessage(SendWordAction());
