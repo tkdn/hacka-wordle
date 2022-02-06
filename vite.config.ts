@@ -2,14 +2,11 @@ import { dirname, relative } from "node:path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { pathResolve } from "utils";
+import WindiCSS from "vite-plugin-windicss";
+import windiConfig from "./windi.config";
 
 export default defineConfig(({ command, mode }) => ({
   root: pathResolve("src"),
-  resolve: {
-    alias: {
-      "@": `${pathResolve("src")}/`,
-    },
-  },
   base: command === "serve" ? "http://localhost:3000/" : "/dist/",
   build: {
     outDir: pathResolve("extension/dist"),
@@ -41,8 +38,8 @@ export default defineConfig(({ command, mode }) => ({
         );
       },
     },
+    WindiCSS({
+      config: windiConfig,
+    }),
   ],
-  optimizeDeps: {
-    include: ["webextension-polyfill"],
-  },
 }));

@@ -1,5 +1,5 @@
 body {
+  @apply bg-gray-100;
   width: 480px;
   min-height: 360px;
-  background-color: #a5c9a2;
 }
