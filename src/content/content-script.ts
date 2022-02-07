@@ -1,5 +1,5 @@
 import { boardState, SendWordAction } from "./constant";
-import { addWordInformation, updateExtensionStorage } from "./function";
+import { getRowLettersValue, updateExtensionStorage } from "./function";
 
 let currentRowIndex = boardState.findIndex((word) => word === "");
 let revealedCount = 0;
@@ -16,17 +16,21 @@ chrome.runtime.onConnect.addListener((port) => {
     if (message.event === "app:boot") {
       port.postMessage(SendWordAction());
     }
-  
+
     /** 拡張から単語が到着 */
     if (message.type === "app:send-word") {
       message.data.split("").forEach((letter: string) => {
-        window.dispatchEvent(new KeyboardEvent("keydown", {
-          key: letter,
-        }));
+        window.dispatchEvent(
+          new KeyboardEvent("keydown", {
+            key: letter,
+          })
+        );
       });
-      window.dispatchEvent(new KeyboardEvent("keydown", {
-        key: "Enter",
-      }));
+      window.dispatchEvent(
+        new KeyboardEvent("keydown", {
+          key: "Enter",
+        })
+      );
     }
   });
 });
@@ -35,19 +39,15 @@ chrome.runtime.onConnect.addListener((port) => {
 window.addEventListener("game-last-tile-revealed-in-row", () => {
   revealedCount++;
   if (revealedCount !== currentRowIndex + 1) {
-    for (let i = 0; i < currentRowIndex; i++) {
-      addWordInformation(i);
-    }
+    /**  */
   } else {
-    addWordInformation(currentRowIndex).then((value) => {
-      updateExtensionStorage(value);
-      try {
-        currentPort!.postMessage(SendWordAction());
-      } catch (error) {
-        console.warn(error);
-      }
-    });
+    const value = getRowLettersValue(currentRowIndex);
+    updateExtensionStorage(value);
+    try {
+      currentPort!.postMessage(SendWordAction());
+    } catch (error) {
+      console.warn(error);
+    }
     currentRowIndex++;
   }
 });
-
