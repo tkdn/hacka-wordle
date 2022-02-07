@@ -4,3 +4,6 @@ dist
 dist-ssr
 *.local
 extension/dist
+extension.zip
+extension.crx
+key.pem

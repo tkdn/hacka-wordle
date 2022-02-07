@@ -5,10 +5,11 @@
   "scripts": {
     "clean": "rimraf extension/dist/",
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run clean && vite build",
     "preview": "vite preview",
     "watch": "npm run clean && esno watch-build.ts",
-    "start:chromium": "web-ext run --source-dir ./extension --target=chromium"
+    "start:chromium": "web-ext run --source-dir ./extension --target=chromium",
+    "pack": "rimraf extension.zip && zip extension.zip -r extension/ && crx pack extension -o ./extension.crx"
   },
   "dependencies": {
     "react": "^17.0.2",
