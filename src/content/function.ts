@@ -5,7 +5,7 @@ export function addWordInformation(insertIndex: number): Promise<string> {
   const lettersValue = $currentRow.getAttribute("letters") as string;
   const clickHandler = () =>
     window.open(
-    `https://www.ldoceonline.com/jp/search/english/direct/?q=${lettersValue}`
+      `https://www.ldoceonline.com/jp/search/english/direct/?q=${lettersValue}`
     );
   if ($currentRow.getAttribute("listener") !== "true") {
     $currentRow.setAttribute("listener", "true");
@@ -19,7 +19,7 @@ export function addWordInformation(insertIndex: number): Promise<string> {
 }
 
 export function updateExtensionStorage(word: string) {
-  const storage: ExtensionStorage = JSON.parse(
+  const { myDictionaries }: ExtensionStorage = JSON.parse(
     localStorage.getItem("hackaWordle") as string
   ) || {
     myDictionaries: [],
@@ -27,37 +27,46 @@ export function updateExtensionStorage(word: string) {
       correct: ["", "", "", "", ""],
       absent: [],
       present: [],
-    }
+    },
   };
-  storage.myDictionaries.push(word);
+  const { correct, present, absent } = getEvaluationsFromScreen();
+  myDictionaries.push(word);
+
   localStorage.setItem(
     "hackaWordle",
     JSON.stringify({
-      ...storage,
-      myDictionaries: [...new Set(storage.myDictionaries)],
-      evaluations: getEvaluationsFromScreen(),
-    } as ExtensionStorage),
+      myDictionaries: [...new Set(myDictionaries)],
+      evaluations: {
+        correct,
+        present,
+        absent,
+      },
+    } as ExtensionStorage)
   );
 }
 
 export function getEvaluationsFromScreen() {
   const correct: string[] = ["", "", "", "", ""];
-  const present: string[] = [];
-  const absent: string[] = [];
-  $gameTiles.forEach(tiles => {
-      [...tiles].forEach((tile, index) => {
-          const letter = tile.getAttribute("letter");
-          const evaluation = tile.getAttribute("evaluation");
-          if (letter) {
-              if (evaluation === "correct") correct[index] = letter;
-              if (evaluation === "present") present.push(letter);
-              if (evaluation === "absent") absent.push(letter);
-          }
-      });
+  const present: string[][] = [];
+  const absent: string[][] = [];
+  $gameTiles.forEach((tiles) => {
+    const newPresent = Array.from({ length: 5 }, () => "");
+    const newAbsent = Array.from({ length: 5 }, () => "");
+    [...tiles].forEach((tile, index) => {
+      const letter = tile.getAttribute("letter");
+      const evaluation = tile.getAttribute("evaluation");
+      if (letter) {
+        if (evaluation === "correct") correct[index] = letter;
+        if (evaluation === "present") newPresent[index] = letter;
+        if (evaluation === "absent") newAbsent[index] = letter;
+      }
+    });
+    present.push(newPresent);
+    absent.push(newAbsent);
   });
   return {
     correct,
-    present: [...new Set(present)],
-    absent: [...new Set(absent)],
-  }
+    absent,
+    present,
+  };
 }

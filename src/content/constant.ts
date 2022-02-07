@@ -5,10 +5,10 @@ type StorageState = {
 export type ExtensionStorage = {
   myDictionaries: string[];
   evaluations: {
-    correct: string[],
-    present: string[],
-    absent: string[],
-  }
+    correct: string[];
+    present: string[][];
+    absent: string[][];
+  };
 };
 
 export const $gameRows = document!
@@ -17,9 +17,10 @@ export const $gameRows = document!
   .querySelectorAll("#board game-row[letters]");
 
 export const $gameTiles = [
-  ...document!.querySelector("game-app")!
-  .shadowRoot!.querySelectorAll("#board game-row")]
-  .map(e => e.shadowRoot!.querySelectorAll("game-tile"));
+  ...document!
+    .querySelector("game-app")!
+    .shadowRoot!.querySelectorAll("#board game-row"),
+].map((e) => e.shadowRoot!.querySelectorAll("game-tile"));
 
 export const { boardState }: StorageState = JSON.parse(
   localStorage.getItem("gameState") as string

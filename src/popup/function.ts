@@ -1,27 +1,33 @@
 import { ExtensionStorage } from "../content/constant";
 
-export function filterDictionariesWithEvals(dicts: string[], evals: ExtensionStorage["evaluations"]) {
+export function filterDictionariesWithEvals(
+  dicts: string[],
+  evals: ExtensionStorage["evaluations"]
+) {
   const { absent, present, correct } = evals;
   return dicts
-    .filter(word => {
+    .filter((word) => {
+      return word.split("").every((letter, index) => {
+        if (correct[index] === "") return true;
+        return letter === correct[index];
+      });
+    })
+    .filter((word) => {
       if (!absent.length) return true;
-      return word.split("")
-        .filter(letter => absent.includes(letter))
-        .length < 1;
+      return (
+        word
+          .split("")
+          .filter((letter, index) => absent.some((ab) => letter === ab[index]))
+          .length < 1
+      );
     })
-    .filter(word => {
+    .filter((word) => {
       if (!present.length) return true;
-      return word.split("")
-        .filter(letter => present.includes(letter))
-        .length > 0;
-    })
-    .filter(word => {
-      return word.split("")
-        .every((letter, index) => {
-          if (correct[index] === "") return true;
-          return letter === correct[index];
-        });
-    })
+      return present.every((pr) => {
+        if (pr.every((prl) => prl === "")) return true;
+        return pr.every((prl, i) => word[i] !== prl && word.includes(prl));
+      });
+    });
 }
 
 export async function getCurrentTab() {
@@ -29,4 +35,4 @@ export async function getCurrentTab() {
   const tabs = await chrome.tabs.query(queryOptions);
   const activeTabs = tabs.filter((t) => t.active);
   return activeTabs.length > 0 ? activeTabs[0] : tabs[0];
-};
+}
