@@ -1,7 +1,7 @@
 import { dirname, relative } from "node:path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { pathResolve } from "utils";
+import { pathResolve } from "./utils";
 import WindiCSS from "vite-plugin-windicss";
 import windiConfig from "./windi.config";
 

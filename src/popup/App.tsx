@@ -1,5 +1,5 @@
 import { SyntheticEvent, useEffect, useState } from "react";
-import { ExtensionStorage } from "src/content/constant";
+import { ExtensionStorage } from "../content/constant";
 import { Cheats } from "./components/Cheats";
 import { Close } from "./components/Close";
 import { Loading, ScreenLoading } from "./components/Loading";

@@ -1,4 +1,4 @@
-import { pathResolve } from "utils";
+import { pathResolve } from "./utils";
 import { defineConfig } from "windicss/helpers";
 
 export default defineConfig({

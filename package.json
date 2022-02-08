@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "rimraf extension/dist/",
     "dev": "vite",
-    "build": "npm run clean && vite build",
+    "build": "npm run clean && tsc && vite build --mode popup && vite build --mode content",
     "preview": "vite preview",
     "watch": "npm run clean && esno watch-build.ts",
     "start:chromium": "web-ext run --source-dir ./extension --target=chromium",
