@@ -23,7 +23,7 @@ export const $gameTiles = [
 ].map((e) => e.shadowRoot!.querySelectorAll("game-tile"));
 
 export const { boardState }: StorageState = JSON.parse(
-  localStorage.getItem("gameState") as string
+  localStorage.getItem("nyt-wordle-state") as string
 );
 
 export const SendWordAction = () => ({

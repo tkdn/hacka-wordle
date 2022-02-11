@@ -31,7 +31,7 @@ export function filterDictionariesWithEvals(
 }
 
 export async function getCurrentTab() {
-  const queryOptions = { url: ["https://www.powerlanguage.co.uk/wordle/*"] };
+  const queryOptions = { url: ["https://www.nytimes.com/games/wordle/*"] };
   const tabs = await chrome.tabs.query(queryOptions);
   const activeTabs = tabs.filter((t) => t.active);
   return activeTabs.length > 0 ? activeTabs[0] : tabs[0];

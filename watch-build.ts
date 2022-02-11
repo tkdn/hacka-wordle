@@ -1,5 +1,5 @@
 import chokidar from "chokidar";
-import { pathResolve } from "utils";
+import { pathResolve } from "./utils";
 import * as vite from "vite";
 
 const buildPopup = () => vite.build({ mode: "popup" });
